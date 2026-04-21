@@ -12,6 +12,8 @@ function cleanOutput(text: string) {
   return clean.trim();
 }
 
+import { useEffect } from 'react';
+
 interface Props {
   task: Task;
   onClose: () => void;
@@ -20,6 +22,14 @@ interface Props {
 }
 
 export default function TaskDetailModal({ task, onClose, onApprove, onReject }: Props) {
+  useEffect(() => {
+    // Khóa cuộn trang nền khi mở popup
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
+
   const agent = agentConfigs[task.assignee] || { name: task.assignee, coreFrameworks: [] };
 
   const handleReject = () => {
@@ -51,18 +61,6 @@ export default function TaskDetailModal({ task, onClose, onApprove, onReject }: 
         </div>
 
         <h2 className="modal-title">{task.title}</h2>
-        
-        <div className="modal-section">
-          <h4>Cội nguồn (Nhiệm vụ)</h4>
-          <p className="modal-desc">{task.description}</p>
-        </div>
-
-        {task.contextData && (
-          <div className="modal-section context-passing-alert">
-            <h4>Dòng chảy ký ức</h4>
-            <p>Hội đồng đã kế thừa di sản trí tuệ từ các bước trước đó để nối tiếp mạch nguồn sáng tạo.</p>
-          </div>
-        )}
 
         {task.output && (
           <div className="modal-section">
@@ -73,6 +71,20 @@ export default function TaskDetailModal({ task, onClose, onApprove, onReject }: 
             <div className="modal-output">{cleanOutput(task.output)}</div>
           </div>
         )}
+
+        <div className="modal-section supplementary-info">
+          <h4>Cội nguồn (Nhiệm vụ)</h4>
+          <p className="modal-desc">{task.description}</p>
+        </div>
+
+        {task.contextData && (
+          <div className="modal-section context-passing-alert supplementary-info">
+            <h4>Dòng chảy ký ức</h4>
+            <p>Hội đồng đã kế thừa di sản trí tuệ từ các bước trước đó để nối tiếp mạch nguồn sáng tạo.</p>
+          </div>
+        )}
+
+
 
         {task.isExecuting && (
           <div className="modal-section">
@@ -105,13 +117,17 @@ export default function TaskDetailModal({ task, onClose, onApprove, onReject }: 
           .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
-            z-index: 1000; display: flex; align-items: center; justify-content: center;
+            z-index: 1000; 
+            overflow-y: auto; /* Cho phép cuộn popup thay vì trang nền */
+            padding: 60px 20px;
+            display: flex; align-items: flex-start; justify-content: center;
             animation: fadeIn 0.4s ease;
-            padding: 20px;
           }
           .modal-content {
-            width: 100%; max-width: 800px; max-height: 85vh;
-            overflow-y: auto; padding: 48px;
+            width: 100%; max-width: 800px;
+            /* Để chiều cao tự giãn, không dùng max-height nữa tránh lỗi thanh cuộn kép */
+            margin: auto;
+            padding: 48px;
             background: rgba(13, 12, 11, 0.95); border: 1px solid rgba(203,163,101,0.2);
             border-radius: 4px; box-shadow: 0 20px 60px rgba(0,0,0,0.8);
           }

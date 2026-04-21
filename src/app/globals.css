@@ -22,7 +22,7 @@
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: 'Inter', sans-serif;
+  font-family: 'Playfair Display', serif;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
