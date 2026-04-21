@@ -51,7 +51,7 @@ export default function TaskDetailModal({ task, onClose, onApprove, onReject }: 
     }
   };
 
-  return (
+  return createPortal(
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content glass-card" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
