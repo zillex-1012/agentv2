@@ -36,6 +36,7 @@ export async function POST(req: Request) {
           }
         ],
         temperature: 0.1,
+        max_tokens: 8192,
         stream: true
       })
     });
@@ -54,20 +55,29 @@ export async function POST(req: Request) {
         const reader = response.body?.getReader();
         if (!reader) { controller.close(); return; }
 
+        let buffer = '';
         try {
           while (true) {
             const { done, value } = await reader.read();
             if (done) break;
-            const chunk = decoder.decode(value);
-            const lines = chunk.split('\n').filter(line => line.trim() !== '');
+            
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n');
+            buffer = lines.pop() || '';
+            
             for (const line of lines) {
-              if (line.includes('[DONE]')) continue;
-              if (line.startsWith('data: ')) {
+              const trimmedLine = line.trim();
+              if (!trimmedLine) continue;
+              if (trimmedLine.includes('[DONE]')) continue;
+              
+              if (trimmedLine.startsWith('data: ')) {
                 try {
-                  const data = JSON.parse(line.replace('data: ', ''));
+                  const data = JSON.parse(trimmedLine.replace(/^data: /, ''));
                   const content = data.choices[0]?.delta?.content || '';
                   if (content) controller.enqueue(encoder.encode(content));
-                } catch {}
+                } catch (e) {
+                  console.error('Parse error during stream handling:', e);
+                }
               }
             }
           }

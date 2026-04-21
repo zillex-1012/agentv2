@@ -74,12 +74,16 @@ export default function Home() {
 
   // === BƯỚC 2: User duyệt kế hoạch → Agents làm việc TUẦN TỰ (Context Passing) ===
   const handleApprovePlan = async () => {
-    const planTasks = tasks.filter(t => t.status === 'plan_review' && !t.isExecuting);
+    const firstPlanTask = tasks.find(t => t.status === 'plan_review' && !t.isExecuting);
+    if (!firstPlanTask) return;
+    const targetBatchId = firstPlanTask.batchId;
+
+    const planTasks = tasks.filter(t => t.status === 'plan_review' && t.batchId === targetBatchId && !t.isExecuting);
     if (planTasks.length === 0) return;
 
-    // Chuyển tất cả sang working nhưng isExecuting = false để xếp hàng chờ
+    // Chuyển nhóm task cùng batch sang working nhưng isExecuting = false để xếp hàng chờ
     setTasks(prev => prev.map(t => 
-      t.status === 'plan_review' && !t.isExecuting
+      planTasks.some(pt => pt.id === t.id)
         ? { ...t, status: 'working' as const, isExecuting: false }
         : t
     ));
@@ -127,13 +131,16 @@ export default function Home() {
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let output = '';
+      let lastUpdateTime = 0;
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
         output += decoder.decode(value, { stream: true });
         
-        if (output.length % 500 < 50) {
+        const now = Date.now();
+        if (now - lastUpdateTime > 100) {
+          lastUpdateTime = now;
           setTasks(prev => prev.map(t => 
             t.id === task.id ? { ...t, output, contextData: task.contextData } : t
           ));
@@ -326,12 +333,4 @@ function parsePlan(text: string, originalCommand: string, batchId: string): Task
   return [
     { id: `${batchId}-0`, assignee: 'communicator', status: 'plan_review', title: `Xử lý luồng: ${originalCommand.substring(0,20)}...`, description: originalCommand, batchId }
   ];
-}
-
-function chunkArray<T>(arr: T[], size: number): T[][] {
-  const chunks: T[][] = [];
-  for (let i = 0; i < arr.length; i += size) {
-    chunks.push(arr.slice(i, i + size));
-  }
-  return chunks;
 }

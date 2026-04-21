@@ -1,12 +1,12 @@
 :root {
-  --background: #0a0a0c;
-  --foreground: #f0f0f2;
-  --accent: #6366f1;
-  --accent-glow: rgba(99, 102, 241, 0.2);
-  --card-bg: rgba(255, 255, 255, 0.03);
-  --card-border: rgba(255, 255, 255, 0.08);
-  --glass-bg: rgba(15, 15, 20, 0.7);
-  --text-dim: #94a3b8;
+  --background: #0d0c0b;
+  --foreground: #f3eedd;
+  --accent: #cba365;
+  --accent-glow: rgba(203, 163, 101, 0.15);
+  --card-bg: rgba(20, 18, 15, 0.4);
+  --card-border: rgba(203, 163, 101, 0.15);
+  --glass-bg: rgba(13, 12, 11, 0.85);
+  --text-dim: #a69c8a;
   --success: #10b981;
   --warning: #f59e0b;
 }
@@ -20,12 +20,12 @@
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Georgia', 'Times New Roman', serif;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Background Gradients for Premium feel */
+/* Background Gradients for Zen feel */
 body::before {
   content: "";
   position: fixed;
@@ -34,8 +34,8 @@ body::before {
   width: 100%;
   height: 100%;
   background: 
-    radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.05) 0%, transparent 40%),
-    radial-gradient(circle at 90% 80%, rgba(168, 85, 247, 0.05) 0%, transparent 40%);
+    radial-gradient(circle at 10% 20%, rgba(203, 163, 101, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 90%, rgba(203, 163, 101, 0.04) 0%, transparent 50%);
   pointer-events: none;
   z-index: -1;
 }
@@ -51,48 +51,52 @@ a {
   border: 1px solid var(--card-border);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-radius: 16px;
+  border-radius: 4px;
   padding: 24px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .glass-card:hover {
-  border-color: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  border-color: rgba(203, 163, 101, 0.3);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 }
 
 /* Input Styles */
 input, textarea {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(20, 18, 15, 0.6);
   border: 1px solid var(--card-border);
-  border-radius: 12px;
-  color: white;
-  padding: 12px 16px;
+  border-radius: 4px;
+  color: var(--foreground);
+  padding: 14px 18px;
   outline: none;
-  transition: all 0.2s;
+  font-family: inherit;
+  transition: all 0.3s ease;
 }
 
 input:focus, textarea:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 2px var(--accent-glow);
+  box-shadow: 0 0 0 1px var(--accent-glow);
 }
 
 button {
   cursor: pointer;
   border: none;
-  border-radius: 12px;
-  transition: all 0.2s;
+  border-radius: 4px;
+  font-family: inherit;
+  transition: all 0.3s;
 }
 
 .primary-button {
   background: var(--accent);
-  color: white;
+  color: #0d0c0b;
   padding: 12px 24px;
   font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-size: 13px;
 }
 
 .primary-button:hover {
-  transform: translateY(-1px);
   filter: brightness(1.1);
-  box-shadow: 0 4px 12px var(--accent-glow);
+  box-shadow: 0 4px 15px var(--accent-glow);
 }
