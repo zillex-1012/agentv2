@@ -309,12 +309,46 @@ function parsePlan(text: string, originalCommand: string, batchId: string): Task
         // Tránh lỗi JSON hợp lệ nhưng lại không có task nào hợp lệ
         if (parsedTasks.length > 0) {
           return parsedTasks;
-        } else {
-          throw new Error("JSON parsed but no valid assignees found.");
         }
       }
     }
   } catch {}
+
+  // Fallback ĐẶC BIỆT: Cứu hộ JSON bị cắt xén (Do Netlify Timeout 10s cúp luồng stream)
+  // Chúng ta sẽ xẻ thủ công đoạn text để moi móc assignee và description
+  const rescuedTasks: Task[] = [];
+  const parts = text.split(/"assignee"\s*:\s*"/);
+  
+  for (let i = 1; i < parts.length; i++) {
+    const roleMatch = parts[i].match(/^([^"]+)"/);
+    if (!roleMatch) continue;
+    
+    const role = String(roleMatch[1]).toLowerCase().trim() as AgentRole;
+    if (!validAssignees.includes(role)) continue;
+    
+    const titleMatch = parts[i].match(/"title"\s*:\s*"([^"]*)"/);
+    let title = titleMatch ? titleMatch[1] : `Nhiệm vụ của ${role.toUpperCase()}`;
+    
+    // Tìm mô tả, lấy mọi chuỗi ngay sau "description": " cho đến dấu " kết thúc, HOẶC nếu bị cụt thì lấy hết phần còn lại
+    const descMatch = parts[i].match(/"description"\s*:\s*"([\s\S]*?)(?:"(?:\s*\}|\s*,)|$)/);
+    let description = descMatch ? descMatch[1] : originalCommand;
+    
+    // Gọt giũa escape character do bị xẻ ngang rãnh
+    description = description.replace(/\\"/g, '"').replace(/\\n/g, '\n').replace(/\\/g, '');
+
+    rescuedTasks.push({
+      id: `${batchId}-${rescuedTasks.length}`,
+      assignee: role,
+      status: 'plan_review' as const,
+      title: title.substring(0, 100),
+      description,
+      batchId
+    });
+  }
+
+  if (rescuedTasks.length > 0) {
+    return rescuedTasks;
+  }
 
   // Fallback 1: Trích xuất nhiệm vụ dạng text thuần túy
   const lines = text.split('\n').filter(l => l.trim().length > 15);

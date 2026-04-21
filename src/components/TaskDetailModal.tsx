@@ -12,7 +12,8 @@ function cleanOutput(text: string) {
   return clean.trim();
 }
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 interface Props {
   task: Task;
@@ -22,7 +23,10 @@ interface Props {
 }
 
 export default function TaskDetailModal({ task, onClose, onApprove, onReject }: Props) {
+  const [mounted, setMounted] = useState(false);
+
   useEffect(() => {
+    setMounted(true);
     // Khóa cuộn trang nền khi mở popup
     document.body.style.overflow = 'hidden';
     return () => {
@@ -31,6 +35,8 @@ export default function TaskDetailModal({ task, onClose, onApprove, onReject }: 
   }, []);
 
   const agent = agentConfigs[task.assignee] || { name: task.assignee, coreFrameworks: [] };
+
+  if (!mounted) return null;
 
   const handleReject = () => {
     const feedback = prompt('Truyền đạt chỉ dụ sửa đổi:');
@@ -113,8 +119,9 @@ export default function TaskDetailModal({ task, onClose, onApprove, onReject }: 
           </div>
         )}
 
-        <style jsx>{`
-          .modal-overlay {
+      </div>
+      <style jsx>{`
+        .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
             z-index: 1000; 
@@ -211,8 +218,8 @@ export default function TaskDetailModal({ task, onClose, onApprove, onReject }: 
           }
           @keyframes fadeIn { from { opacity: 0; backdrop-filter: blur(0px); } to { opacity: 1; backdrop-filter: blur(8px); } }
           @keyframes spin { to { transform: rotate(360deg); } }
-        `}</style>
-      </div>
-    </div>
+      `}</style>
+    </div>,
+    document.body
   );
 }
