@@ -11,6 +11,14 @@ const statusConfig = {
   done:        { label: 'Viên mãn', icon: '✨' }
 };
 
+function cleanOutput(text: string) {
+  if (!text) return '';
+  let clean = text.replace(/```(?:json)?/g, '').replace(/```/g, '');
+  clean = clean.replace(/"(thought|content|analysis|insight|strategy|solution|assignee|tasks)":\s*/g, '');
+  clean = clean.replace(/[{}"]/g, ''); 
+  return clean.trim();
+}
+
 interface Props {
   tasks: Task[];
   onApprovePlan: () => void;
@@ -81,7 +89,7 @@ export default function Dashboard({ tasks, onApprovePlan, onApproveTask, onRejec
 
                   {task.output && (
                     <div className="task-preview">
-                      {task.output.substring(0, 180)}...
+                      {cleanOutput(task.output).substring(0, 180)}...
                     </div>
                   )}
 

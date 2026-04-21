@@ -69,17 +69,19 @@ export default function Omnibar({ onCommand }: { onCommand: (cmd: string) => voi
           font-size: 18px;
           padding: 12px 0;
           color: var(--foreground);
+          letter-spacing: normal;
         }
         
         .omnibar-input::placeholder {
           color: rgba(166, 156, 138, 0.5);
           font-style: italic;
+          letter-spacing: normal;
         }
 
         .omnibar-hint {
           font-size: 11px;
           text-transform: uppercase;
-          letter-spacing: 2px;
+          letter-spacing: 1px;
           color: var(--accent);
           opacity: 0.6;
           font-weight: normal;

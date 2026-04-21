@@ -3,6 +3,15 @@
 import { Task } from '@/lib/types';
 import { agentConfigs } from '@/lib/agents/roles';
 
+function cleanOutput(text: string) {
+  if (!text) return '';
+  let clean = text.replace(/```(?:json)?/g, '').replace(/```/g, '');
+  clean = clean.replace(/"(thought|content|analysis|insight|strategy|solution|assignee|tasks)":\s*/g, '');
+  clean = clean.replace(/[{}"]/g, '');
+  // Giữ lại các khoảng trắng và xuống dòng
+  return clean.trim();
+}
+
 interface Props {
   task: Task;
   onClose: () => void;
@@ -61,7 +70,7 @@ export default function TaskDetailModal({ task, onClose, onApprove, onReject }: 
               <h4>Chân lý tụ hội (Kết quả)</h4>
               <button className="copy-btn" onClick={handleCopy}>Lưu truyền</button>
             </div>
-            <div className="modal-output">{task.output}</div>
+            <div className="modal-output">{cleanOutput(task.output)}</div>
           </div>
         )}
 

@@ -247,7 +247,7 @@ export default function Home() {
         }
         .logo { font-size: 24px; font-weight: 800; letter-spacing: -1px; }
         .logo span {
-          background: linear-gradient(to right, var(--accent), #a855f7);
+          background: linear-gradient(to right, var(--accent), #f3eedd);
           -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
         .user-profile {
