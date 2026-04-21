@@ -1,0 +1,11 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[functions]
+  # Tăng timeout cho Serverless Functions (DeepSeek R1 cần thời gian suy nghĩ)
+  external_node_modules = ["next"]
+  node_bundler = "esbuild"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
